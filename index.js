@@ -54,6 +54,7 @@ function showMenu( selectedCity ) {
    console.log(`Città selezionata: ${selectedCity.name}, ${selectedCity.country}`);
     console.log('--------------------------------');
   }
+  console.log('0. Quanto manca a Natale?');
    console.log('1. Cerca una città');
   console.log('2. Visualizza meteo atuale');
   console.log('3. Visualizza previsoni settimanali');
@@ -136,7 +137,7 @@ function showCurrentWeather( city, { current, units } ) {
    console.log(`Temperatura percepita: ${current.apparent_temperature} ${units.apparent_temperature}`);
   console.log(`Umidità: ${current.relative_humidity_2m}${units.relative_humidity_2m}`);
   console.log(`Vento: ${current.wind_speed_10m} ${units.wind_speed_10m}`);
-  console.log(`Condizioni: ${weatherDescriptions[current.weather_code] ?? 'Non disponibili'}`);
+    console.log(`Condizioni: ${weatherDescriptions[current.weather_code] ?? 'Non disponibili'}`);
   console.log(`Momento: ${current.is_day === 1 ? 'Giorno' : 'Notte'}`);
   console.log('================================');
 }
@@ -248,6 +249,28 @@ async function recordSearch(city) {
   await writeFile(historyPath, `${JSON.stringify(history, null, 2)}\n`);
 }
 
+function showChristmasCountdown() {
+  const now = new Date();
+
+  if (now.getMonth() === 11 && now.getDate() === 25) {
+    console.log('Oggi è Natale! Buon Natale!');
+    return;
+  }
+
+  let christmas = new Date(now.getFullYear(), 11, 25);
+  if(now > christmas) {
+    christmas = new Date(now.getFullYear() + 1, 11, 25);
+  }
+
+  const secondsLeft = Math.floor((christmas - now) / 1000);
+  const days = Math.floor(secondsLeft / 86400);
+  const hours = Math.floor((secondsLeft % 86400) / 3600);
+  const minutes = Math.floor((secondsLeft % 3600) / 60);
+  const seconds = secondsLeft % 60;
+
+  console.log(`Mancano ${days} giorni, ${hours} ore, ${minutes} minuti e ${seconds} secondi a Natale!`);
+}
+
 async function main() {
   let  running = true;
   let selectedCity = null;
@@ -257,6 +280,9 @@ async function main() {
     const choice = (await readline.question('\nSeleziona un\'opzione: ')).trim();
 
     switch( choice ) {
+      case '0':
+        showChristmasCountdown();
+        break;
       case '1':
         {
           const cityName = (await readline.question('Nome della città: ')).trim();
@@ -398,7 +424,7 @@ async function main() {
         running = false;
         break;
       default:
-        console.log('Opzione non valida. Inserisci un numero da 1 a 7.');
+        console.log('Opzione non valida. Inserisci un numero da 0 a 7.');
     }
   }
 }
